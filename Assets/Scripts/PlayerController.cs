@@ -7,7 +7,8 @@ public class PlayerController : MonoBehaviour
     public float moveSpeed;
     private Transform tf;
     public static PlayerController ins;
-
+    private PlayerBrickController brickController;
+    public string playerColorName="red";
     public bool move = false;
     private void Awake()
     {
@@ -15,6 +16,7 @@ public class PlayerController : MonoBehaviour
     }
     void Start()
     {
+        brickController = GetComponent<PlayerBrickController>();
         rb = GetComponent<Rigidbody>();
         tf = transform;
     }
@@ -27,12 +29,20 @@ public class PlayerController : MonoBehaviour
             move = true;
             tf.rotation = Quaternion.LookRotation(rb.velocity);
             animator.SetBool("Running", true);
-           // animator.SetBool("Idle", false);
         }
         else
         {
             animator.SetBool("Running", false);
-            //animator.SetBool("Idle", true);
         }
+    }
+    private void OnTriggerEnter(Collider other)
+    {
+        Brick brick = other.transform.GetComponent<Brick>();
+        if (brick.colorName == playerColorName)
+        {
+            other.gameObject.SetActive(false);
+            brickController.UpdatePlayerBricks();
+        }
+
     }
 }

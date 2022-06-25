@@ -4,6 +4,7 @@ public class BrickPool : MonoBehaviour
 {
     public static BrickPool ins;
     public List<GameObject> pooledBricks;
+    public List<GameObject> pooledBricksBridge;
     public GameObject Brick;
     public int amountToPool;
     private void Awake()
