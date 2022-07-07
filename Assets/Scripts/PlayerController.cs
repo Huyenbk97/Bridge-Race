@@ -17,14 +17,17 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         brickController = GetComponent<PlayerBrickController>();
-        rb = GetComponent<Rigidbody>();
-        tf = transform;
+        rb = Cache.GetRigidbody(gameObject);
+        tf = Cache.GetTransform(gameObject);
     }
-
      void FixedUpdate()
     {
-        rb.velocity = new Vector3(joystick.Horizontal * moveSpeed,rb.velocity.y,joystick.Vertical*moveSpeed);
-        if(joystick.Horizontal !=0 || joystick.Vertical != 0)
+        ControllPlayer();
+    }
+    public void ControllPlayer()
+    {
+        rb.velocity = new Vector3(joystick.Horizontal * moveSpeed, rb.velocity.y, joystick.Vertical * moveSpeed);
+        if (joystick.Horizontal != 0 || joystick.Vertical != 0)
         {
             move = true;
             tf.rotation = Quaternion.LookRotation(rb.velocity);
@@ -37,8 +40,8 @@ public class PlayerController : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
-        Brick brick = other.transform.GetComponent<Brick>();
-        if (brick.colorName == playerColorName)
+     
+        if (Cache.GetColorName(other.gameObject).colorName.Equals("red"))
         {
             other.gameObject.SetActive(false);
             brickController.UpdatePlayerBricks();
