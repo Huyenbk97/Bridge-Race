@@ -1,16 +1,29 @@
-﻿using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 public class BrickGenerator : MonoBehaviour
 {
     [SerializeField]
     private Transform BrickPrefab;
+
     private Vector3 startPoint;
     private Vector3 position;
-    private int numberBrick = 24;
+
+    private int length = 24;
     private int line = 6;
     private int xOrder = 0;
+
     private float zPosition;
     private float xPosition;
+
+    [System.Serializable]
+    public class ColorData
+    {
+        public Color color;
+        public string colorName;
+    }
+    public ColorData[] colorArray;
 
     [System.Serializable]
     public class SpawnedBricks
@@ -21,29 +34,26 @@ public class BrickGenerator : MonoBehaviour
         public bool removed;
     }
     public SpawnedBricks[] spawnedBricks;
-    [System.Serializable]
-    public class ColorData
-    {
-        public Color color;
-        public string colorName;
-    }
-    public ColorData[] colorArray;
+
     void Start()
     {
         startPoint = transform.position;
         zPosition = transform.position.z;
         xPosition = transform.position.x;
-        spawnedBricks = new SpawnedBricks[numberBrick];
+
+        spawnedBricks = new SpawnedBricks[length];
+
         CreateBricks();
     }
+
     private void CreateBricks()
     {
-        for (int i = 0; i < numberBrick; i++)
+        for (int i = 0; i < length; i++)
         {
-            xOrder=xOrder+4;
+            xOrder++;
             if (i % line == 0)
             {
-                zPosition -= 3;
+                zPosition -= 1;
                 xOrder = 0;
                 position = new Vector3(xPosition, startPoint.y, zPosition);
             }
@@ -51,29 +61,54 @@ public class BrickGenerator : MonoBehaviour
             {
                 position = new Vector3(xPosition + xOrder, startPoint.y, zPosition);
             }
-            GetBricktoPool(position,i);
-           
+
+            Transform createdBrick = Instantiate(BrickPrefab, position, BrickPrefab.transform.rotation, transform);
+            GiveColor(createdBrick, i);
         }
     }
-    private void GetBricktoPool(Vector3 BrickSpawPosition,int i)
-    {
-        GameObject brick = BrickPool.ins.GetPooledObject();
-        if (brick != null)
-        {
-            brick.transform.position = BrickSpawPosition;
-            brick.SetActive(true);
-        }
-        GiveColor(brick,i);
-    }
-    private void GiveColor(GameObject Brick,int i)
+
+    private void GiveColor(Transform createdBrick, int i)
     {
         int randomColor = Random.Range(0, colorArray.Length);
-        Brick.GetComponent<Renderer>().material.SetColor("_Color", colorArray[randomColor].color);
-        Brick.GetComponent<Brick>().colorName = colorArray[randomColor].colorName;
-        Brick.GetComponent<Brick>().brickNumber = i;
+        createdBrick.GetComponent<Renderer>().material.SetColor("_Color", colorArray[randomColor].color);
+        createdBrick.GetComponent<Brick>().colorName = colorArray[randomColor].colorName;
+        createdBrick.GetComponent<Brick>().brickNumber = i;
+
+        InsertIntoArray(colorArray[randomColor].color, colorArray[randomColor].colorName, createdBrick, i);
     }
-    void Update()
+
+    private void InsertIntoArray(Color _color, string _colorName, Transform createdBrick, int i)
     {
-        
+        var tmp = new SpawnedBricks();
+
+        tmp.color = _color;
+        tmp.colorName = _colorName;
+        tmp.position = createdBrick.position;
+        tmp.removed = false;
+
+        spawnedBricks[i] = tmp;
+    }
+
+    public void MakeRemoved(int brickNumber)
+    {
+        spawnedBricks[brickNumber].removed = true;
+    }
+
+    public void GenerateRemovedBrick()
+    {
+        for (int i = 0; i < length; i++)
+        {
+            if (spawnedBricks[i].removed == true)
+            {
+                Transform createdBrick = Instantiate(BrickPrefab, spawnedBricks[i].position, BrickPrefab.transform.rotation, transform);
+
+                createdBrick.GetComponent<Renderer>().material.SetColor("_Color", spawnedBricks[i].color);
+                createdBrick.GetComponent<Brick>().colorName = spawnedBricks[i].colorName;
+                createdBrick.GetComponent<Brick>().brickNumber = i;
+
+                spawnedBricks[i].removed = false;
+                return;
+            }
+        }
     }
 }
