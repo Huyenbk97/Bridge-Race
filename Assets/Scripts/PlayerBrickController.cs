@@ -48,20 +48,21 @@ public class PlayerBrickController : MonoBehaviour
     private void CheckBridge()
     {
         RaycastHit hit;
-        if (Physics.Raycast(brickPlacer.position, transform.TransformDirection(Vector3.down), out hit, Mathf.Infinity))
+        if (Physics.Raycast(brickPlacer.position,Cache.GetTransform(gameObject).TransformDirection(Vector3.down), out hit, Mathf.Infinity))
         {
-            Debug.DrawRay(brickPlacer.position, transform.TransformDirection(Vector3.down) * hit.distance, Color.yellow);
+            //Debug.DrawRay(brickPlacer.position, transform.TransformDirection(Vector3.down) * hit.distance, Color.yellow);
 
-            if (hit.collider.GetComponent<PlacedBrick>() != null && hit.collider.GetComponent<PlacedBrick>().colorName != selectedColorName && bricks <= 0)
+           // Debug.Log(hit.collider.GetComponent<PlacedBrick>());
+            if (hit.collider.GetComponent<PlacedBrick>() != null && Cache.GetColorNamePlacedBrick(hit.collider.gameObject) != selectedColorName && bricks <= 0)
             {
                 DontStepToOtherColorBrick();
             }
-            else if (hit.collider.GetComponent<PlacedBrick>() != null && hit.collider.GetComponent<PlacedBrick>().colorName != selectedColorName && bricks > 0)
+            else if (hit.collider.GetComponent<PlacedBrick>() != null && Cache.GetColorNamePlacedBrick(hit.collider.gameObject) != selectedColorName && bricks > 0)
             {
                 ReplaceOtherColorBrick(hit);
             }
 
-            if (hit.collider.CompareTag("Bridge"))
+            if (hit.collider.CompareTag(Constant.BRIDGE))
             {
                 if (bricks > 0)
                 {
@@ -73,7 +74,7 @@ public class PlayerBrickController : MonoBehaviour
                     {
                         botController.PlaceOrCollectBricks();
                     }
-
+                    
                     brickCount = hit.collider.GetComponent<WayKeeper>().bricksPlaced;
                     BlockFallOff();
                 }
@@ -82,8 +83,8 @@ public class PlayerBrickController : MonoBehaviour
         }
         else
         {
-            Debug.DrawRay(brickPlacer.position, transform.TransformDirection(Vector3.down) * 1000, Color.white);
-            Debug.Log("Did not Hit");
+           // Debug.DrawRay(brickPlacer.position, Cache.GetTransform(gameObject).TransformDirection(Vector3.down) * 1000, Color.white);
+           // Debug.Log("Did not Hit");
         }
     }
 
@@ -91,7 +92,7 @@ public class PlayerBrickController : MonoBehaviour
     {
         brickCount = hit.collider.GetComponent<WayKeeper>().bricksPlaced;
 
-        bridgePos = hit.collider.transform.position;
+        bridgePos = Cache.GetTransform(hit.collider.gameObject).position;
 
         Vector3 brickPlacement = new Vector3(bridgePos.x, bridgePos.y + (brickCount * 0.30f), bridgePos.z + (brickCount * 0.65f));
 
@@ -108,20 +109,20 @@ public class PlayerBrickController : MonoBehaviour
 
         if (isBot)
         {
-           // botController.UpdateMesh();
+            // botController.UpdateMesh();
         }
     }
 
     private void BlockFallOff()
     {
-        Vector3 playerPosition = transform.position;
+        Vector3 playerPosition = Cache.GetPosition(gameObject);
 
-        if (transform.position.z > bridgePos.z + (brickCount * 0.50f))
+        if (Cache.GetPosition(gameObject).z > bridgePos.z + (brickCount * 0.50f))
         {
             playerPosition.z = bridgePos.z + (brickCount * 0.50f);
         }
 
-        transform.position = playerPosition;
+        Cache.GetTransform(gameObject).position = playerPosition;
     }
 
     private void RemoveDummyBrick()
@@ -141,7 +142,7 @@ public class PlayerBrickController : MonoBehaviour
 
     private void DontStepToOtherColorBrick()
     {
-        transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z - 0.5f);
+        Cache.GetTransform(gameObject).position = new Vector3(transform.position.x, transform.position.y, transform.position.z - 0.5f);
     }
 
     private void ReplaceOtherColorBrick(RaycastHit hit)

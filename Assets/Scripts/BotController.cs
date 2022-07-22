@@ -40,7 +40,7 @@ public class BotController : MonoBehaviour
                 if (spawnedBricks[i].removed != true && spawnedBricks[i].colorName == brickController.selectedColorName)
                 {
                     navMeshAgent.SetDestination(spawnedBricks[i].position);
-                    print("Found brick:" + spawnedBricks[i].colorName + " --- " + spawnedBricks[i].position);
+                    //print("Found brick:" + spawnedBricks[i].colorName + " --- " + spawnedBricks[i].position);
                     return;
                 }
             }
@@ -105,7 +105,7 @@ public class BotController : MonoBehaviour
                 if (spawnedBricks[i].removed != true && spawnedBricks[i].colorName == brickController.selectedColorName)
                 {
                     navMeshAgent.SetDestination(spawnedBricks[i].position);
-                    print("Found brick:" + spawnedBricks[i].colorName + " --- " + spawnedBricks[i].position);
+                   // print("Found brick:" + spawnedBricks[i].colorName + " --- " + spawnedBricks[i].position);
                     StopCoroutine(FirstCollect());
                 }
             }
