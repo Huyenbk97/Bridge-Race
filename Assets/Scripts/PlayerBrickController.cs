@@ -160,6 +160,20 @@ public class PlayerBrickController : MonoBehaviour
 
         brickGenerator.GenerateRemovedBrick();
     }
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag(Constant.FINISH)){
+            JoystickPlayerExample.ins.gameEnd = true;
+            try
+            {
+                GameMn.ins.showWINUI();
+            }
+            catch (error)
+            {
+            }
+           
+        }
+    }
 
     private void Update()
     {

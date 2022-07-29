@@ -6,5 +6,6 @@ public class Constant
     #region UNITY_TAG
     public static string BRIDGE = "Bridge";
     public static string BRICK = "Brick";
+    public static string FINISH = "Finish";
     #endregion
 }
